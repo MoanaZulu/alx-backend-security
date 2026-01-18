@@ -1,3 +1,85 @@
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+
+
+
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    # Django defaults...
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+
+
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+
+
+
+INSTALLED_APPS = [
+    # Django defaults...
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    # Third-party
+    "rest_framework",
+    "drf_yasg",
+    "corsheaders",
+
+    # Your apps
+    "ip_tracking",
+]
+
+
+
+INSTALLED_APPS = [
+    # ...
+    "corsheaders",
+    "rest_framework",
+    "drf_yasg",
+    # ...
+]
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    # ...
+]
+
+# Allow all origins (for testing)
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+
+
+
 """
 Django settings for core project.
 
