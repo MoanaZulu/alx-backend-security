@@ -1,4 +1,17 @@
 from django.urls import path
+from .views import login_view, sensitive_view
+
+urlpatterns = [
+    path("login/", login_view, name="login"),
+    path("sensitive/", sensitive_view, name="sensitive"),
+]
+
+
+
+
+
+
+from django.urls import path
 from . import views
 
 app_name = 'ip_tracking'

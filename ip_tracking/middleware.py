@@ -1,3 +1,80 @@
+import requests
+from django.http import HttpResponseForbidden
+from django.core.cache import cache
+from .models import RequestLog, BlockedIP
+
+class RequestLoggingMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        ip = request.META.get("REMOTE_ADDR")
+
+        # Block if IP is blacklisted
+        if BlockedIP.objects.filter(ip_address=ip).exists():
+            return HttpResponseForbidden("Your IP has been blocked.")
+
+        # Check cache
+        geo_data = cache.get(f"geo_{ip}")
+        if not geo_data:
+            try:
+                response = requests.get(f"https://ipapi.co/{ip}/json/")
+                if response.status_code == 200:
+                    data = response.json()
+                    geo_data = {
+                        "country": data.get("country_name"),
+                        "city": data.get("city"),
+                    }
+                else:
+                    geo_data = {"country": None, "city": None}
+                # Cache for 24 hours
+                cache.set(f"geo_{ip}", geo_data, timeout=60*60*24)
+            except Exception:
+                geo_data = {"country": None, "city": None}
+
+        # Log request
+        RequestLog.objects.create(
+            ip_address=ip,
+            path=request.path,
+            country=geo_data.get("country"),
+            city=geo_data.get("city"),
+        )
+
+        return self.get_response(request)
+
+
+
+
+
+
+from django.http import HttpResponseForbidden
+from .models import RequestLog, BlockedIP
+
+class RequestLoggingMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        ip = request.META.get("REMOTE_ADDR")
+
+        # Block if IP is blacklisted
+        if BlockedIP.objects.filter(ip_address=ip).exists():
+            return HttpResponseForbidden("Your IP has been blocked.")
+
+        # Log request
+        RequestLog.objects.create(
+            ip_address=ip,
+            path=request.path
+        )
+
+        response = self.get_response(request)
+        return response
+
+
+
+
+
+
 from django.http import HttpResponseForbidden
 from .models import RequestLog, BlockedIP
 from django.utils.timezone import now
