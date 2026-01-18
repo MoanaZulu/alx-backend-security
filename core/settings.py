@@ -1,3 +1,50 @@
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "detect-suspicious-ips-hourly": {
+        "task": "ip_tracking.tasks.detect_suspicious_ips",
+        "schedule": crontab(minute=0, hour="*"),  # runs every hour
+    },
+}
+
+
+
+
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
+
+
+
+
+
+
+INSTALLED_APPS = [
+    # Django defaults...
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    # Third-party
+    "ratelimit",
+
+    # Your apps
+    "ip_tracking",
+]
+
+
+
+
+
+
 INSTALLED_APPS = [
     # Django defaults...
     "django.contrib.admin",

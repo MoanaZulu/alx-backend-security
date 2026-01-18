@@ -1,3 +1,39 @@
+from ratelimit.decorators import ratelimit
+
+
+
+
+
+
+from django.http import JsonResponse
+from django.contrib.auth import authenticate, login
+from ratelimit.decorators import ratelimit
+
+# Anonymous users: 5 requests/minute
+@ratelimit(key="ip", rate="5/m", block=True)
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({"message": "Login successful"})
+        else:
+            return JsonResponse({"error": "Invalid credentials"}, status=401)
+    return JsonResponse({"error": "POST required"}, status=400)
+
+
+# Authenticated users: 10 requests/minute
+@ratelimit(key="user", rate="10/m", block=True)
+def sensitive_view(request):
+    return JsonResponse({"message": "Sensitive data visible"})
+
+
+
+
+
+
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from ratelimit.decorators import ratelimit
