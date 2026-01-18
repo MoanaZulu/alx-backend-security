@@ -1,5 +1,43 @@
 services:
   - type: web
+    name: alx-backend-security-web
+    env: python
+    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput
+    startCommand: gunicorn core.wsgi:application
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        value: your-secret-key
+      - key: DJANGO_DEBUG
+        value: False
+      - key: DATABASE_URL
+        value: your-database-url
+      - key: CELERY_BROKER_URL
+        value: amqp://your-cloudamqp-url
+      - key: EMAIL_HOST
+        value: smtp.yourprovider.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_HOST_USER
+        value: your-email@example.com
+      - key: EMAIL_HOST_PASSWORD
+        value: your-email-password
+
+  - type: worker
+    name: alx-backend-security-celery
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A core worker -l info
+    envVars:
+      - key: CELERY_BROKER_URL
+        value: amqp://your-cloudamqp-url
+
+
+
+
+
+
+services:
+  - type: web
     name: alx-backend-security
     env: python
     plan: free
